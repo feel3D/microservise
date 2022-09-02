@@ -2,6 +2,8 @@
 
 namespace App\DTO;
 
+use JetBrains\PhpStorm\Internal\TentativeType;
+
 class LowestPriceEnquiry implements PromotionEnquryInterface
 {
     private ?int $productId;
@@ -14,7 +16,7 @@ class LowestPriceEnquiry implements PromotionEnquryInterface
 
     private ?string $voucherCode;
 
-    private ?string $price;
+    private ?int $price;
 
     private ?int $discountedPrice;
 
@@ -111,18 +113,18 @@ class LowestPriceEnquiry implements PromotionEnquryInterface
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getPrice(): ?string
+    public function getPrice(): ?int
     {
         return $this->price;
     }
 
     /**
-     * @param string|null $price
+     * @param int|null $price
      * @return static
      */
-    public function setPrice(?string $price): self
+    public function setPrice(?int $price): self
     {
         $this->price = $price;
         return $this;
@@ -164,5 +166,8 @@ class LowestPriceEnquiry implements PromotionEnquryInterface
         return $this;
     }
 
-
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
+    }
 }
