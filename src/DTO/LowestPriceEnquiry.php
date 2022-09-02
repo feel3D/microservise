@@ -2,9 +2,7 @@
 
 namespace App\DTO;
 
-use JetBrains\PhpStorm\Internal\TentativeType;
-
-class LowestPriceEnquiry implements PromotionEnquryInterface
+class LowestPriceEnquiry implements PromotionEnquiryInterface
 {
     private ?int $productId;
 

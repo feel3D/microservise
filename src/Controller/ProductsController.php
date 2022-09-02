@@ -3,47 +3,31 @@
 namespace App\Controller;
 
 use App\DTO\LowestPriceEnquiry;
+use App\Filter\PromotionsFilterInterface;
 use App\Service\Serializer\DTOSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductsController extends AbstractController
 {
     #[Route('/products/{id}/lowest-price', name: 'lowest-price', methods: 'POST')]
-    //public function lowestPrices(Request $request, int $id, SerializerInterface $serializer): Response
-    public function lowestPrices(Request $request, int $id, DTOSerializer $serializer): Response
+    public function lowestPrices(
+        Request $request,
+        int $id,
+        DTOSerializer $serializer,
+        PromotionsFilterInterface $filter
+    ): Response
     {
-        if ($request->headers->has('force_fail')) {
-            return new JsonResponse(
-                ['error' => 'Promotions Engine failure message'],
-                $request->headers->get('force_fail')
-            );
-        }
-
         /** @var LowestPriceEnquiry $lowestPriceEnquire */
         $lowestPriceEnquire = $serializer->deserialize($request->getContent(), LowestPriceEnquiry::class, 'json');
-        $lowestPriceEnquire->setPrice(500)->setPromotionName('SALE');
-        //dd($lowestPriceEnquire);
+
+        $modifiedEnquire = $filter->apply($lowestPriceEnquire);
+        $responseContent = $serializer->serialize($modifiedEnquire, 'json');
 
 
-        $responseContent = $serializer->serialize($lowestPriceEnquire, 'json');
         return new Response($responseContent, 200);
-
-        //return new JsonResponse($lowestPriceEnquire, 200);
-//        return new JsonResponse([
-//            "quantity" => 5,
-//            "request_location" => "UK",
-//            "voucher_code" => "0U812",
-//            "request_date" => "2022-04-04",
-//            "product_id" => $id,
-//            'price' => 100,
-//            'discounted_price' => 3,
-//            'promotion_name' => 'Black Friday half price sale'
-//        ], 200);
     }
 
 
